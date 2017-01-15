@@ -1,0 +1,3 @@
+---
+sensu_dev_tool_packages:
+  - build-essential

@@ -1,0 +1,18 @@
+---
+- name: manage sensu-server service
+  service:
+    name: sensu-server
+    state: "{{ 'started' if sensu_server_enabled|bool else 'stopped' }}"
+    enabled: "{{ sensu_server_enabled|bool }}"
+
+- name: manage sensu-api service
+  service:
+    name: sensu-api
+    state: "{{ 'started' if sensu_api_enabled|bool else 'stopped' }}"
+    enabled: "{{ sensu_api_enabled|bool }}"
+
+- name: manage sensu-client service
+  service:
+    name: sensu-client
+    state: "{{ 'started' if sensu_configure_client|bool and sensu_client_enabled|bool else 'stopped' }}"
+    enabled: "{{ sensu_configure_client|bool and sensu_client_enabled|bool }}"

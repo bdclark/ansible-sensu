@@ -1,0 +1,18 @@
+---
+- name: add sensu apt key
+  apt_key:
+    url: https://sensu.global.ssl.fastly.net/apt/pubkey.gpg
+
+- name: add sensu apt repository
+  apt_repository:
+    filename: sensu
+    repo: deb https://sensu.global.ssl.fastly.net/apt sensu main
+
+- name: install sensu apt package
+  apt:
+    name: "{{ 'sensu=' + sensu_package_version + '-*' if sensu_package_version else 'sensu' }}"
+    state: present
+  notify:
+    - restart sensu-client
+    - restart sensu-server
+    - restart sensu-api

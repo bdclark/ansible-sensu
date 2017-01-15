@@ -1,0 +1,28 @@
+---
+- name: install dev tools
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ sensu_dev_tool_packages }}"
+  when: sensu_install_dev_tools
+
+- name: manage gems
+  gem:
+    name: "{{ item.name }}"
+    version: "{{ item.version | default(omit) }}"
+    executable: /opt/sensu/embedded/bin/gem
+  with_items: "{{ sensu_gems }}"
+
+- name: manage sensu plugins
+  gem:
+    name: "{{ item.name if 'sensu-plugins-' in item.name else 'sensu-plugins-' + item.name }}"
+    version: "{{ item.version | default(omit) }}"
+    executable: /opt/sensu/embedded/bin/gem
+  with_items: "{{ sensu_plugins }}"
+
+- name: manage sensu extensions
+  gem:
+    name: "{{ item.name if 'sensu-plugins-' in item.name else 'sensu-plugins-' + item.name }}"
+    version: "{{ item.version | default(omit) }}"
+    executable: /opt/sensu/embedded/bin/gem
+  with_items: "{{ sensu_plugins }}"

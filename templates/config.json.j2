@@ -1,0 +1,4 @@
+{{ {'rabbitmq': sensu_rabbitmq_config,
+    'transport': sensu_transport_config,
+    'redis': sensu_redis_config,
+    'api': sensu_api_config } | to_nice_json(indent=2) }}

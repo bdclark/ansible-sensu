@@ -1,0 +1,151 @@
+---
+- hosts: test-kitchen
+  remote_user: root
+  vars:
+    rabbitmq_ssl_enabled: yes
+    rabbitmq_ssl_cert_content: "{{ sensu_ssl_server_cert_content }}"
+    rabbitmq_ssl_key_content: "{{ sensu_ssl_server_key_content }}"
+    rabbitmq_ssl_cacert_content: "{{ sensu_ssl_server_cacert_content }}"
+    rabbitmq_ssl_verify: verify_none
+    rabbitmq_ssl_fail_if_no_peer_cert: no
+    rabbitmq_loopback_users: []
+
+    sensu_package_version: 0.26.5
+    sensu_server_enabled: yes
+    sensu_api_enabled: yes
+    sensu_client_name: test-kitchen
+    sensu_client_subscriptions:
+      - testing
+    sensu_log_level: debug
+    sensu_plugins:
+      - name: cpu-checks
+        version: 1.0.0
+      - name: disk-checks
+
+    # Normally, the following vars would be saved in Vault
+    "sensu_ssl_client_cert_content": |
+        -----BEGIN CERTIFICATE-----
+        MIIC3TCCAcWgAwIBAgIBAjANBgkqhkiG9w0BAQUFADASMRAwDgYDVQQDDAdTZW5z
+        dUNBMB4XDTE3MDExMjE4MjIxNloXDTIyMDExMTE4MjIxNlowITEOMAwGA1UEAwwF
+        c2Vuc3UxDzANBgNVBAoMBmNsaWVudDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+        AQoCggEBAMdwctYifOvl3x+j4xVrCbiKNjZxhEdJZPOuIqM8Tt7PSLsKOszKL2jh
+        WukD8rXrvIwe2CuPy5qFAtHjKFTlkdP3iAr+y9FnCWU+odytOzzfa9hWZ0KWZzCw
+        4oD7UmfMxkjh0GS6GBtde10C3rwvUE+VAb6jSwgxG9aBVGUN2MdPnWcAL41n2z2G
+        e09qNehT6Q6PrUkmlsTJjE8V3wvl2+kdNtj4I5M8eghrCIuOR2ajU95zLLVH0brX
+        87ItAwEO0eNAGTBD5CTGW0IPBhRCJ3RhaW4iPFagkNIUOn5BlPcaCw6a30xBZbf+
+        gRi6O5OvJjndQTF0DxdatkOl7tKPYKMCAwEAAaMvMC0wCQYDVR0TBAIwADALBgNV
+        HQ8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQEFBQADggEB
+        AKk7jaK5gb6TcSXCgdQroKw0PcAe9TPgoiNaTqxeC0mLNrVKAMhbdkecPGeQnUOW
+        h07n7u4wJPbA7xO+VtO/6gZOH+aZXUfyJ6asyMbAK4Kfr3gbRBSUndqa6wxyMW6H
+        ze1Wzy4ZEANhsSUM4WPpU5vFlk8Td4Alx99fyQUVYgwRRr5h6FeIPUNTxXfv336a
+        ghdIvDGpFED8gV76RKNhzpMqynEz780qYFndSHPoyGbe5gBo+Hr43FoIovxHiXTk
+        1JYmlmejbEfp6bNxfBDKQTUVbWmn8IQYzmLFPebSh7h1kHL5sZdAai7RE0MkgLlr
+        swXsbgaBE8qbssUSdB03AXk=
+        -----END CERTIFICATE-----
+    "sensu_ssl_client_key_content": |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEpAIBAAKCAQEAx3By1iJ86+XfH6PjFWsJuIo2NnGER0lk864iozxO3s9Iuwo6
+        zMovaOFa6QPyteu8jB7YK4/LmoUC0eMoVOWR0/eICv7L0WcJZT6h3K07PN9r2FZn
+        QpZnMLDigPtSZ8zGSOHQZLoYG117XQLevC9QT5UBvqNLCDEb1oFUZQ3Yx0+dZwAv
+        jWfbPYZ7T2o16FPpDo+tSSaWxMmMTxXfC+Xb6R022Pgjkzx6CGsIi45HZqNT3nMs
+        tUfRutfzsi0DAQ7R40AZMEPkJMZbQg8GFEIndGFpbiI8VqCQ0hQ6fkGU9xoLDprf
+        TEFlt/6BGLo7k68mOd1BMXQPF1q2Q6Xu0o9gowIDAQABAoIBAE1LCEZzEUT/Tqzd
+        gCmR1S+e6QnKjsBt8mD6UNRAkDSL0x0iBs3NYfhctjXuYMceeHE5lv+y9+6HtCMR
+        zVSxsAWdPi08uFMMgripQGPdA0NBN3OdcOF+lrlpJC9mt3YhB4vBcFlJQgSBA0l1
+        zkrSb2aYUhfHA1JGbgqBDusnJaeARLQSqycFfuIPFTc70FVNlFZWCu5XZ0ZemvOl
+        h9Hp4tFibtH5NK69EuCvCcDIswmmf+UEGUMATSIZxq/R+Ar/CVYDvK5cbgSXnDYK
+        uSDgOCRzB29OB09mjemWohKG42rnH4Xjk9DOQn8DDj4BPQ2RF7YieDT9wJ2IMxDA
+        cAgAQsECgYEA9et6UbE25IIzAadGmzuPLmNKFORQcoIvM+EQ8VcRJ+2wI5UcTZnq
+        hezycOEZwwdSFT0r3cgvyqJGjQVKhwUdYOkEUqectHyWiJgL9hkYocO5YwRtrRoW
+        2q1LLp6DjvWq5N5rkV6wDiwFCGC+7VH7DdlIF4j/1M93wjaPWjpXjaECgYEAz507
+        35jLrfRsuxPIsdsQFZ0q1R3n/uOWjWxfGhSQwyYEmloFwiiso7A1sVv+nPY/POGQ
+        N824zwq1x2DuilO934PNiwaM6oYiFkdJmDHRXrJ9MJxjfKBFuX0QILx3N9QxjSBW
+        4MmIuKV9Q4fMbVKQfi8xbRzwYu1WYjdyHHy4H8MCgYEAxm0KdYAYWqjznxHp1rdo
+        AHX9AH54quyAScwAb7thDGatCQj3nWXj5cwakxoOP19Yy+pfysQMS+REKOVsDSYD
+        Xn6mDktQFhGxJOYKQLhfN6dFnq+kD1hNuIS7dRJR9Lgk/Ca7hMByLf020lu9sp/D
+        gpkfol3Yj04Xw41ifds1agECgYEAs6+hD09+EQt4Q53G2HABhsNlO9hLXyZ4uePu
+        l3LvK4cu+qwpSbbMXEt43Q0C27SgXL/YgwOxDLh3RZ1WNzBtKBM6BTZhJeV7gQ6n
+        2mpbi/stMLJZxJYuYnCkUcDr6czkKgGwT5L9mtnYBWd1/bQ0zJFp1Mb0IprJZe4Y
+        /CDRduMCgYAWZjgEVtGYsWEOMsNwMAosG60NYbbS8EfwZZB8AIL43P3gP/nkS1Lv
+        KTnCkDFHYVFzmQGhd6UCUYXV8EhLBNNCIZcxTMNmMgUWYEBtXFQP29nQBW3zprhM
+        kdvCiyjm3jIt645WbgLVdnK8GgTlEj4j+q7/mI0RjNEAp3zvRWpQDw==
+        -----END RSA PRIVATE KEY-----
+    "sensu_ssl_server_cacert_content": |
+        -----BEGIN CERTIFICATE-----
+        MIICxDCCAaygAwIBAgIJAJjsRDwxvyOfMA0GCSqGSIb3DQEBBQUAMBIxEDAOBgNV
+        BAMMB1NlbnN1Q0EwHhcNMTcwMTEyMTgyMjE2WhcNMjIwMTExMTgyMjE2WjASMRAw
+        DgYDVQQDDAdTZW5zdUNBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+        vxztxw+2ODU0Pwy3jzGxJZ2mhGcG9Hd3jCyshWifzdVOaDp/3yF735f30d+Wki6K
+        keRcyn6eX9HlEiPEVCfSPVWFWO9WVB/7xJHf6pNrPo/GroMT/QZJL/ZxK3rui6JR
+        WiZbROToP+9oxKQSQPBoDmOtZoxxcZ+Ku3LtD2x6r82zLRzeBBOlNP5Xrsw5tjJo
+        zbe+WsFOVb16ijXHxiQ9Skhu4PeKxdl/kmyyrVChIU59XP965SxB7ZMnJsaXHgea
+        nWbUcHEDMqJ9PSHMgumzeWt7KtitS2gNRN7RAkJ6l0A94SIGsxAUiy6aKCSF2Z3b
+        n3YmYM7YdFrmmEG8uUoX6QIDAQABox0wGzAMBgNVHRMEBTADAQH/MAsGA1UdDwQE
+        AwIBBjANBgkqhkiG9w0BAQUFAAOCAQEAupSEgrUeQOsnzjDptsXudDgbi0sd3NO8
+        NyDk4llTVXtkPC/q3ZP1wLDdoC2oy3jQDg8fC+4Y2oVISNZwRSzolVYO15liI9rJ
+        VaRLpzBUEsMWZh0Dw2IcYKz4KnOIjuUjK0rzFMlnCI8dBAnj7SSe3kqhfYmhKXBf
+        zV32RONCP5TGVqOk/X8OukDBNu06IT1oijVYkmONfiaM3HDFP655OEas9CLtrBzg
+        DnR7W+/5SGxSqzqPaoQtp/Y4eFZ+++XhKsti8YGyR9UJCSxakSIT0G9/wkoSKSfg
+        wge0uzRBAOo5s5GEwZlk5S46tc8Kdi7E6p9wL4403piCCLjt99ZlYQ==
+        -----END CERTIFICATE-----
+    "sensu_ssl_server_cert_content": |
+        -----BEGIN CERTIFICATE-----
+        MIIC3TCCAcWgAwIBAgIBATANBgkqhkiG9w0BAQUFADASMRAwDgYDVQQDDAdTZW5z
+        dUNBMB4XDTE3MDExMjE4MjIxNloXDTIyMDExMTE4MjIxNlowITEOMAwGA1UEAwwF
+        c2Vuc3UxDzANBgNVBAoMBnNlcnZlcjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+        AQoCggEBAM/fyTXzDnHgmQVlkNK0pa4hy3u7PurXa2HlAxj8VYYiMuaVBdR/Mqty
+        ZHNspIcAYHF3PXh85RdDRgvX263MI/FxmRCHw7nFahevx1Lni7/3EbI2ym9oraCW
+        LWT4PHKJIR/fa76JAEv/rsS8UcQMOYhKC+LqyMbKJI8NniYGFd3tBOrkBbVNbvh2
+        QAy2urP5P+mjTvijx7tSzEsemFXJgbA9NkOBGBdI9U4ExtVtzxa3k34DS8YLxtjN
+        ZBiGi23+U572chXPywp+zAMfhlP3rXm0iD0yLz/ohxBxAqPIa3v8ZlTeUapJIg/b
+        ZutAjdRovsZG7wuSqQGHQsWJ2MurCCcCAwEAAaMvMC0wCQYDVR0TBAIwADALBgNV
+        HQ8EBAMCBSAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQEFBQADggEB
+        ADTdecgN8ipGxOzx3j0bZzanVnXXJc3Vb/hxbunlu0N0dIGlnGtGEd7fXAoRd2Yv
+        PT44SscxBwWIURV1FVtS+zDfzvYSvVUbPCeElawwkTq+cTIT0A8ZFeHSuVdhgVGg
+        L5JK4o8NJ5H5z/75d/4bjVkR+g5iKrbIafYkBFQi7ylbeZbIg3HBWab0aIZL0xBS
+        y/joxJp61OiKaPzKysaTE/fM5UHaCnv2TEmoa+U04lGzbgLsaD0yel0toGyRGqAm
+        196zqWOTigosTbrvuknnFxNlod9Ouq6JDb2DYZIpnucU83qoSEvyz0iHPLfxrScg
+        txjVb7QTmffjmu3P7VgZatA=
+        -----END CERTIFICATE-----
+    "sensu_ssl_server_key_content": |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAz9/JNfMOceCZBWWQ0rSlriHLe7s+6tdrYeUDGPxVhiIy5pUF
+        1H8yq3Jkc2ykhwBgcXc9eHzlF0NGC9fbrcwj8XGZEIfDucVqF6/HUueLv/cRsjbK
+        b2itoJYtZPg8cokhH99rvokAS/+uxLxRxAw5iEoL4urIxsokjw2eJgYV3e0E6uQF
+        tU1u+HZADLa6s/k/6aNO+KPHu1LMSx6YVcmBsD02Q4EYF0j1TgTG1W3PFreTfgNL
+        xgvG2M1kGIaLbf5TnvZyFc/LCn7MAx+GU/etebSIPTIvP+iHEHECo8hre/xmVN5R
+        qkkiD9tm60CN1Gi+xkbvC5KpAYdCxYnYy6sIJwIDAQABAoIBAQDMoR0vkH6Nt2yr
+        FVpFMTNPgVEQEjlTcI/ypEAyXmPKUOwOdHByyGwWvdsIjNBBXSuTRrAqZbgW+FCB
+        5BIKukQ/r3XgAeW4gA96Fb1/bRPy+sJezvTkSwVwaaVyGbNXhIopGAS2YaL7LUzb
+        ug47kVUpRssAq+LNXbwzXlJqV986wAvDPoDFhVH6PiXKZ4zsMbPj2IEY7dhfs3Fg
+        BO+MrFCQpVfl9SeDXwSHirax9sBFtXrD6EIFgViDr8UjOErlwnyWAMCdmZYlKEkF
+        f2piMsox2YoAYmee30NtTwCAoB3+3bNe1NsgdeSIxsaq5RHncmnJ6QsO1OLaWXUi
+        JqesHbahAoGBAOeWsILjM72Zx2ffSwHE7y2IeII8tFZDW/dSUnep7anmeWiHMP8Z
+        UoLOH8ZQsdqdur8Lg5ifYa+hlTZobnI9gZI/KtOJNcyMKSF2HSk0J6smYx1K7ht5
+        57luswTBxGYKZoYX/y3e1i+Tn6H/gYT371L8B+Nt98ilGAvnIbzqnshZAoGBAOXJ
+        LDewIf8FHSR5dfJsz4ypzFzHjubAoyPH9NWcmQ3q5ixm8Da8LUmHxztvQsh+9vB0
+        7mMbWY2tGoJrXk1Wn5406ROHQG81ksJD5g47PlhqXbIccg9XBuGY4CqAhCpmIndD
+        QmopC5TVsZniQ3CmTNSKGiNOTlsxkcdfsHDRXkR/AoGAKiO0SIy4/HX/37m0t0Sz
+        VLCxZNlQ4yVslYsoMFf+Q90JGGkJFFHyPpTtGTPTuPjcYyjgMCRILSIUuYq1Fhp0
+        +jx+OXGNFYQnc8w/MCEqWq0oecsJmnxLGuW2s1Xiu8KGtz2klB8pEA0njd2lHqHS
+        rWHouYxn+t13i6rp66sxazkCgYB7PxZ/W/IwBT8nRBpWB7SenqglD0f/Tk1yMJqK
+        RC73fwkrwZ6PzQiBStk6cKeiQC8Us7L050N2MOVqFEqFMrP0OC7XMZEG1PY9SgvH
+        kFEVPR+6G3W18piXQdbiFQJOd29/Bk1GAXPbxW43ulsvvZKx4My6KRLv6Ltm81UA
+        fduQ4wKBgB8TGIxeAdtPiUasM9c9/VzvfI+aIgk7IE5mufA2HcquumMNanxZvY/x
+        9kQd150iOCMTIg5iVhcjq3bmMlUH1bzzmG0ThR8ZcZ2RjZhIkRuCIR9TccGu7OKF
+        +QxCuAMaI9+wZ+PxRrojVHuLxqran2Ibe8IxAnzq48HJUpMmgSNW
+        -----END RSA PRIVATE KEY-----
+
+  roles:
+    # - role: rabbitmq
+    # - role: redis
+    - role: sensu
+
+  tasks:
+    - name: integration test packages
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - curl
+        - jq

@@ -1,0 +1,33 @@
+---
+sensu_rabbitmq_base_config:
+  host: "{{ sensu_rabbitmq_host }}"
+  port: "{{ sensu_rabbitmq_port }}"
+  vhost: "{{ sensu_rabbitmq_vhost }}"
+  user: "{{ sensu_rabbitmq_user }}"
+  password: "{{ sensu_rabbitmq_password }}"
+
+sensu_transport_base_config:
+  name: "{{ sensu_transport_name }}"
+  reconnect_on_error: yes
+
+sensu_api_base_config:
+  host: "{{ sensu_api_host }}"
+  bind: "{{ sensu_api_bind }}"
+  port: "{{ sensu_api_port }}"
+  user: "{{ sensu_api_user }}"
+  password: "{{ sensu_api_password }}"
+
+sensu_redis_base_config:
+  host: "{{ sensu_redis_host }}"
+  port: "{{ sensu_redis_port }}"
+  reconnect_on_error: yes
+
+sensu_client_base_config:
+  name: "{{ sensu_client_name }}"
+  address: "{{ sensu_client_address }}"
+  subscriptions: "{{ sensu_client_subscriptions }}"
+
+sensu_rabbitmq_ssl_config:
+  ssl:
+    cert_chain_file: /etc/sensu/ssl/cert.pem
+    private_key_file: /etc/sensu/ssl/key.pem

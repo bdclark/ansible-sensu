@@ -1,0 +1,93 @@
+---
+- name: include base sensu configuration vars
+  include_vars: config.yml
+
+- name: set sensu configuration
+  set_fact:
+    sensu_rabbitmq_config: "{{ sensu_rabbitmq_base_config |
+      combine(sensu_rabbitmq_config, recursive=True) |
+      combine(sensu_rabbitmq_ssl_config if sensu_rabbitmq_ssl_enabled else {}, recursive=True)
+    }}"
+    sensu_transport_config: "{{ sensu_transport_base_config | combine(sensu_transport_config, recursive=True) }}"
+    sensu_api_config: "{{ sensu_api_base_config | combine(sensu_api_config, recursive=True) }}"
+    sensu_redis_config: "{{ sensu_redis_base_config | combine(sensu_redis_config, recursive=True) }}"
+    sensu_client_config: "{{ sensu_client_base_config | combine(sensu_client_config, recursive=True) }}"
+
+- name: ensure config directories
+  file:
+    dest: /etc/sensu/{{ item }}
+    state: directory
+    mode: "{{ sensu_dir_mode }}"
+    owner: "{{ sensu_admin_user }}"
+    group: "{{ sensu_group }}"
+  with_items:
+    - conf.d
+    - extensions
+    - handlers
+    - mutators
+    - plugins
+    - ssl
+
+- name: ensure log directory
+  file:
+    dest: "{{ sensu_log_dir }}"
+    state: directory
+    owner: "{{ sensu_user }}"
+    group: "{{ sensu_group }}"
+    mode: "{{ sensu_log_dir_mode }}"
+
+- name: write sensu ssl cert/key files
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ sensu_admin_user }}"
+    group: "{{ sensu_group }}"
+    mode: 0640
+  no_log: yes
+  with_items:
+    - content: "{{ sensu_ssl_client_cert_content }}"
+      dest: /etc/sensu/ssl/cert.pem
+    - content: "{{ sensu_ssl_client_key_content }}"
+      dest: /etc/sensu/ssl/key.pem
+  when: sensu_transport_name == 'rabbitmq'
+    and sensu_rabbitmq_ssl_enabled
+    and sensu_ssl_client_key_content
+    and sensu_ssl_client_cert_content
+  notify:
+    - restart sensu-client
+    - restart sensu-server
+    - restart sensu-api
+
+- name: write service defaults file
+  template:
+    src: sensu.default.j2
+    dest: /etc/default/sensu
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart sensu-client
+    - restart sensu-server
+    - restart sensu-api
+
+- name: write config file
+  template:
+    src: "{{ sensu_config_template }}"
+    dest: /etc/sensu/config.json
+    owner: "{{ sensu_admin_user }}"
+    group: "{{ sensu_group }}"
+    mode: "{{ sensu_conf_file_mode }}"
+  notify:
+    - restart sensu-client
+    - restart sensu-server
+    - restart sensu-api
+
+- name: write client config file
+  template:
+    src: "{{ sensu_client_config_template  }}"
+    dest: /etc/sensu/conf.d/client.json
+    owner: "{{ sensu_admin_user }}"
+    group: "{{ sensu_group }}"
+    mode: "{{ sensu_conf_file_mode }}"
+  when: sensu_configure_client
+  notify: restart sensu-client

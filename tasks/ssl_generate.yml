@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  vars:
+    sensu_ssl_tool_dir: /tmp
+    sensu_ssl_tool_url: http://sensuapp.org/docs/latest/files/sensu_ssl_tool.tar
+    sensu_ssl_vars_output_path: "{{ sensu_ssl_tool_dir }}/sensu_ssl_vars.yml"
+    sensu_ssl_tool_cmd: "{{ sensu_ssl_tool_dir }}/sensu_ssl_tool/ssl_certs.sh"
+
+  tasks:
+    - name: download and extract sensu_ssl_tool
+      unarchive:
+        src: "{{ sensu_ssl_tool_url }}"
+        dest: "{{ sensu_ssl_tool_dir }}"
+        creates: "{{ sensu_ssl_tool_dir }}/sensu_ssl_tool"
+        copy: no
+
+    - name: generate ssl certs
+      command: "{{ sensu_ssl_tool_cmd }} generate"
+      args:
+        chdir: "{{ sensu_ssl_tool_dir }}/sensu_ssl_tool"
+        creates: "{{ sensu_ssl_tool_dir }}/sensu_ssl_tool/server"
+
+    - set_fact:
+        sensu_ssl_content:
+          sensu_ssl_client_key_content: "{{ lookup('file', sensu_ssl_tool_dir + '/sensu_ssl_tool/client/key.pem') }}"
+          sensu_ssl_client_cert_content: "{{ lookup('file', sensu_ssl_tool_dir + '/sensu_ssl_tool/client/cert.pem') }}"
+          sensu_ssl_server_key_content: "{{ lookup('file', sensu_ssl_tool_dir + '/sensu_ssl_tool/server/key.pem') }}"
+          sensu_ssl_server_cert_content: "{{ lookup('file', sensu_ssl_tool_dir + '/sensu_ssl_tool/server/cert.pem') }}"
+          sensu_ssl_server_cacert_content: "{{ lookup('file', sensu_ssl_tool_dir + '/sensu_ssl_tool/sensu_ca/cacert.pem') }}"
+
+    - copy:
+        content: "{{ sensu_ssl_content | to_nice_yaml(default_style='|',) | replace(': |-', ': |') }}"
+        dest: "{{ sensu_ssl_vars_output_path }}"

@@ -1,0 +1,16 @@
+---
+- name: add sensu yum repository
+  yum_repository:
+    name: sensu
+    description: Sensu Repository
+    baseurl: http://sensu.global.ssl.fastly.net/yum/$basearch/
+    gpgcheck: no
+
+- name: install sensu yum package
+  yum:
+    name: "{{ 'sensu-' + sensu_package_version if sensu_package_version else 'sensu' }}"
+    state: present
+  notify:
+    - restart sensu-client
+    - restart sensu-server
+    - restart sensu-api

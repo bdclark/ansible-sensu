@@ -1,0 +1,78 @@
+---
+# if set, will install specific version, e.g. "0.26.5"
+sensu_package_version: ~
+
+sensu_configure_client: yes
+sensu_client_enabled: yes
+sensu_server_enabled: no
+sensu_api_enabled: no
+sensu_install_only: no
+
+sensu_user: sensu
+sensu_group: sensu
+sensu_admin_user: root
+
+sensu_dir_mode: 0750
+sensu_log_dir_mode: 0755
+sensu_conf_file_mode: 0640
+
+# /etc/default/sensu settings
+sensu_use_embedded_ruby: yes
+sensu_log_dir: /var/log/sensu
+sensu_log_level: info
+sensu_service_max_wait: 10
+sensu_client_deregister_on_stop: no
+sensu_client_deregister_handler: ~
+sensu_loaded_tempfile_dir: ~
+
+# client definition
+sensu_client_name: "{{ ansible_hostname }}"
+sensu_client_address: "{{ ansible_default_ipv4['address'] }}"
+sensu_client_subscriptions: []
+sensu_client_config: {} # additional settings merged into client definition
+
+# content of rabbitmq ssl client cert/keys
+sensu_ssl_client_key_content: ~
+sensu_ssl_client_cert_content: ~
+
+# rabbitmq server key/cert (if not configured elsewhere)
+sensu_ssl_server_key_content: ~
+sensu_ssl_server_cert_content: ~
+sensu_ssl_server_cacert_content: ~
+
+# rabbitmq definition
+sensu_rabbitmq_ssl_enabled: yes
+sensu_rabbitmq_host: 127.0.0.1
+sensu_rabbitmq_port: "{{ 5671 if sensu_rabbitmq_ssl_enabled else 5672 }}"
+sensu_rabbitmq_vhost: /
+sensu_rabbitmq_user: guest
+sensu_rabbitmq_password: guest
+sensu_rabbitmq_config: {} # additional settings merged into rabbitmq definition
+
+# transport definition
+sensu_transport_name: rabbitmq
+sensu_transport_config: {} # additional settings merged into transport definition
+
+# api definition
+sensu_api_host: 127.0.0.1
+sensu_api_bind: 0.0.0.0
+sensu_api_port: 4567
+sensu_api_user: ~
+sensu_api_password: ~
+sensu_api_config: {} # additional settings merged into api definition
+
+# redis definition
+sensu_redis_host: 127.0.0.1
+sensu_redis_port: 6379
+sensu_redis_config: {} # additional settings merged into redis definition
+
+sensu_install_dev_tools: yes
+sensu_extensions: []
+sensu_gems: []
+sensu_plugins: []
+  # - name: disk-checks
+  #   version: x.y.z
+
+# template files
+sensu_config_template: config.json.j2
+sensu_client_config_template: client.json.j2

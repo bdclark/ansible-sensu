@@ -1,0 +1,11 @@
+EMBEDDED_RUBY="{{ sensu_use_embedded_ruby | bool | lower }}"
+LOG_DIR="{{ sensu_log_dir }}"
+LOG_LEVEL="{{ sensu_log_level }}"
+SERVICE_MAX_WAIT="{{ sensu_service_max_wait }}"
+CLIENT_DEREGISTER_ON_STOP="{{ sensu_client_deregister_on_stop | bool | lower }}"
+{% if sensu_client_deregister_handler %}
+CLIENT_DEREGISTER_HANDLER="{{ sensu_client_deregister_handler}}"
+{% endif %}
+{% if sensu_loaded_tempfile_dir %}
+export SENSU_LOADED_TEMPFILE_DIR="{{ sensu_loaded_tempfile_dir}}"
+{% endif %}
