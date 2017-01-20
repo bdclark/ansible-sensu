@@ -1,4 +1,9 @@
 ---
+- assert:
+    that: sensu_plugins_src_dir != None
+    msg: sensu_plugins_src_dir must be set when managing file-based sensu plugins
+  when: sensu_plugins | union(sensu_plugins_group) | union(sensu_plugins_host) | selectattr('url', 'undefined') | list | length > 0
+
 - include_vars: "{{ ansible_os_family}}.yml"
 
 - include: "{{ ansible_os_family }}/install.yml"

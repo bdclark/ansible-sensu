@@ -66,12 +66,26 @@ sensu_redis_host: 127.0.0.1
 sensu_redis_port: 6379
 sensu_redis_config: {} # additional settings merged into redis definition
 
-sensu_install_dev_tools: yes
-sensu_extensions: []
+# sensu (plugin) gems
+sensu_install_dev_tools: no
+sensu_gems_host: []
+sensu_gems_group: []
 sensu_gems: []
-sensu_plugins: []
-  # - name: disk-checks
+  # - name: sensu-plugins-elasticsearch   <-required
   #   version: x.y.z
+  #   state: present
+
+# sensu plugin files (url-based or file-based)
+sensu_plugins_src_dir: ~
+sensu_plugins_host: []
+sensu_plugins_group: []
+sensu_plugins: []
+  # - name: handler-opsgenie.rb     <-required
+  #   src: /optional/path/to/src
+  #   dest: /optional/path/to/dest
+  # - name: handler-slack.rb
+  #   url: http://remote/url.rb     <-required
+  #   dest_dir: /optional/custom/dir
 
 # template files
 sensu_config_template: config.json.j2

@@ -10,19 +10,37 @@
   gem:
     name: "{{ item.name }}"
     version: "{{ item.version | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
     executable: /opt/sensu/embedded/bin/gem
-  with_items: "{{ sensu_gems }}"
+  with_flattened:
+    - "{{ sensu_gems }}"
+    - "{{ sensu_gems_group }}"
+    - "{{ sensu_gems_host }}"
 
-- name: manage sensu plugins
-  gem:
-    name: "{{ item.name if 'sensu-plugins-' in item.name else 'sensu-plugins-' + item.name }}"
-    version: "{{ item.version | default(omit) }}"
-    executable: /opt/sensu/embedded/bin/gem
-  with_items: "{{ sensu_plugins }}"
+- name: manage plugins (files)
+  copy:
+    src: "{{ item.src | default(sensu_plugins_src_dir + '/' + item.name) }}"
+    dest: "{{ item.dest | default('/etc/sensu/plugins/' + item.name) }}"
+    state: "{{ item.state | default(omit) }}"
+    owner: "{{ sensu_admin_user }}"
+    group: "{{ sensu_group }}"
+    mode: 0755
+  with_flattened:
+    - "{{ sensu_plugins | selectattr('url', 'undefined') | list }}"
+    - "{{ sensu_plugins_group | selectattr('url', 'undefined') | list }}"
+    - "{{ sensu_plugins_host | selectattr('url', 'undefined') | list }}"
 
-- name: manage sensu extensions
-  gem:
-    name: "{{ item.name if 'sensu-plugins-' in item.name else 'sensu-plugins-' + item.name }}"
-    version: "{{ item.version | default(omit) }}"
-    executable: /opt/sensu/embedded/bin/gem
-  with_items: "{{ sensu_plugins }}"
+- name: manage plugins (urls)
+  get_url:
+    url: "{{ item.url }}"
+    url_username: "{{ item.url_username | default(omit) }}"
+    url_password: "{{ item.url_password | default(omit) }}"
+    checksum: "{{ item.checksum | default(omit) }}"
+    dest: "{{ item.dest_dir | default('/etc/sensu/plugins') }}/{{ item.name }}"
+    owner: "{{ sensu_admin_user }}"
+    group: "{{ sensu_group }}"
+    mode: 0755
+  with_flattened:
+    - "{{ sensu_plugins | selectattr('url', 'defined') | list }}"
+    - "{{ sensu_plugins_group | selectattr('url', 'defined') | list }}"
+    - "{{ sensu_plugins_host | selectattr('url', 'defined') | list }}"
