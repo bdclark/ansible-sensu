@@ -36,3 +36,25 @@ end
     its(:stdout) { should match /^true/ }
   end
 end
+
+describe command('/opt/sensu/embedded/bin/gem list') do
+  its(:exit_status) { should eql 0 }
+  its(:stdout) { should match /^sensu-plugins-cpu-checks.*1\.0\.0/ }
+  its(:stdout) { should contain 'sensu-plugins-disk-checks' }
+  its(:stdout) { should contain 'ensu-plugins-memory-checks' }
+  its(:stdout) { should contain 'sensu-plugins-load-checks' }
+end
+
+%w(
+  /etc/sensu/plugins/check-process.rb
+  /etc/sensu/plugins/check-true.sh
+  /tmp/check-true-tmp.sh
+  /etc/sensu/handlers/handler-slack.rb
+).each do |plugin|
+  describe file(plugin) do
+    it { should be_file }
+    it { should be_mode 755 }
+    it { should be_owned_by 'root' }
+    it { should be_grouped_into 'sensu' }
+  end
+end
