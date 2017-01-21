@@ -12,6 +12,7 @@
     version: "{{ item.version | default(omit) }}"
     state: "{{ item.state | default(omit) }}"
     executable: /opt/sensu/embedded/bin/gem
+    user_install: no
   with_flattened:
     - "{{ sensu_gems }}"
     - "{{ sensu_gems_group }}"
